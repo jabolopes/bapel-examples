@@ -1,0 +1,6 @@
+[submodule "SDL"]
+	path = SDL
+	url = ./SDL/
+[submodule "entt"]
+	path = entt
+	url = ./entt/
