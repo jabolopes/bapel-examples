@@ -1,0 +1,47 @@
+module;
+
+#include <SDL3/SDL.h>
+
+export module sdl:sdl_impl;
+
+export namespace sdl {
+
+// @bpl: export type sdl.Event
+using Event = SDL_Event;
+
+// @bpl: export type sdl.EventType
+using EventType = SDL_EventType;
+
+// @bpl: export sdl.eventKeyDown: sdl.EventType
+const EventType eventKeyDown = SDL_EVENT_KEY_DOWN;
+
+// @bpl: export sdl.eventKeyUp: sdl.EventType
+const EventType eventKeyUp = SDL_EVENT_KEY_UP;
+
+// @bpl: export type sdl.Keycode
+using Keycode = SDL_Keycode;
+
+// @bpl: export sdl.keyDown: sdl.Keycode
+const Keycode keyDown = SDLK_DOWN;
+
+// @bpl: export sdl.keyUp: sdl.Keycode
+const Keycode keyUp = SDLK_UP;
+
+// @bpl: export type sdl.KeyboardEvent = struct{key sdl.Keycode, down bool, repeat bool}
+using KeyboardEvent = SDL_KeyboardEvent;
+
+// @bpl: export sdl.keyboardEventType: sdl.KeyboardEvent -> sdl.EventType
+SDL_EventType keyboardEventType(const SDL_KeyboardEvent& event) {
+  return event.type;
+}
+
+// @bpl: export type sdl.Point = struct{x i64, y i64}
+using Point = SDL_Point;
+
+// @bpl: export type sdl.FPoint = struct{x f32, y f32}
+using FPoint = SDL_FPoint;
+
+// @bpl: export type sdl.FRect = struct{x f32, y f32, w f32, h f32}
+using FRect = SDL_FRect;
+
+}  // namespace sdl

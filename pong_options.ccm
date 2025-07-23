@@ -1,0 +1,11 @@
+module;
+
+export module pong:pong_options;
+
+import sdl;
+
+// @bpl: export windowSize: sdl.Point
+const sdl::Point windowSize = {600, 400};
+
+// @bpl: export windowSizeF: sdl.FPoint
+const sdl::FPoint windowSizeF = {600, 400};

@@ -7,8 +7,6 @@ module;
 
 export module game:game_material;
 
-import :game_game;
-
 export {
 
 struct MaterialTexture {
@@ -32,54 +30,13 @@ struct Material {
   std::vector<MaterialLayer> layers;
 };
 
-void renderShape(const MaterialShape& shape) {
-  auto *renderer = game.renderer();
-
-  if (shape.fill_color.a > 0) {
-    SDL_SetRenderDrawColorFloat(renderer, shape.fill_color.r, shape.fill_color.g, shape.fill_color.b, shape.fill_color.a);
-    SDL_RenderFillRect(renderer, &shape.dst_rect);
-  }
-
-  if (shape.draw_color.a > 0) {
-    SDL_SetRenderDrawColorFloat(renderer, shape.draw_color.r, shape.draw_color.g, shape.draw_color.b, shape.draw_color.a);
-    SDL_RenderRect(renderer, &shape.dst_rect);
-  }
-}
-
-void renderTexture(const MaterialTexture& texture) {
-
-}
-
-void renderLayer(const MaterialLayer& layer) {
-  if (layer.hidden) {
-    return;
-  }
-
-  if (auto* texture = std::get_if<MaterialTexture>(&layer.value); texture != nullptr) {
-    renderTexture(*texture);
-    return;
-  }
-
-  renderShape(std::get<MaterialShape>(layer.value));
-}
-
-void renderMaterial(const Material& material) {
-  if (material.hidden) {
-    return;
-  }
-
-  for (const auto& layer : material.layers) {
-    renderLayer(layer);
-  }
-}
-
-// @bpl: export newRect: (i64, i64, i64, i64) -> Material
-Material newRect(int64_t x, int64_t y, int64_t w, int64_t h) {
+// @bpl: export newRect: (f32, f32, f32, f32) -> Material
+Material newRect(float x, float y, float w, float h) {
   return Material{
     .layers = {
       MaterialLayer{
         .value = MaterialShape{
-          .dst_rect = SDL_FRect{float(x), float(y), float(w), float(h)},
+          .dst_rect = SDL_FRect{x, y, w, h},
           .fill_color = SDL_FColor{1.0, 0.0, 0.0, 1.0},
         }
       }
@@ -87,11 +44,44 @@ Material newRect(int64_t x, int64_t y, int64_t w, int64_t h) {
   };
 }
 
-// @bpl: export addMaterial: Material -> ()
-void addMaterial(Material material) {
-  auto& ecs = game.ecs();
-  const auto entity = ecs.create();
-  ecs.emplace<Material>(entity, std::move(material));
+// @bpl: export getX: Material -> f32
+float getX(const Material& material) {
+  auto& layer = material.layers[0];
+  return std::get<MaterialShape>(layer.value).dst_rect.x;
+}
+
+// @bpl: export getY: Material -> f32
+float getY(const Material& material) {
+  auto& layer = material.layers[0];
+  return std::get<MaterialShape>(layer.value).dst_rect.y;
+}
+
+// @bpl: export setX: (Material, f32) -> ()
+void setX(Material& material, float x) {
+  auto& layer = material.layers[0];
+  auto* shape = std::get_if<MaterialShape>(&layer.value);
+  shape->dst_rect.x = x;
+}
+
+// @bpl: export setY: (Material, f32) -> ()
+void setY(Material& material, float y) {
+  auto& layer = material.layers[0];
+  auto* shape = std::get_if<MaterialShape>(&layer.value);
+  shape->dst_rect.y = y;
+}
+
+// @bpl: export getDstRect: Material -> sdl.FRect
+SDL_FRect getDstRect(Material& material) {
+  auto& layer = material.layers[0];
+  return std::get<MaterialShape>(layer.value).dst_rect;
+}
+
+// @bpl: export setDstRect: (Material, sdl.FRect) -> ()
+std::monostate setDstRect(Material& material, SDL_FRect rect) {
+  auto& layer = material.layers[0];
+  auto* shape = std::get_if<MaterialShape>(&layer.value);
+  shape->dst_rect = std::move(rect);
+  return std::monostate();
 }
 
 }  // export

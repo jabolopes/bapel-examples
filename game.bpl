@@ -6,7 +6,13 @@ imports {
 
 impls {
   "game_game.ccm"
+  "game_ecs.ccm"
+  "game_prefabs.bpl"
+  "game_act.bpl"
+  "game_input.bpl"
   "game_material.ccm"
+  "game_render.ccm"
+  "game_options.bpl"
   "game_impl.ccm"
 }
 

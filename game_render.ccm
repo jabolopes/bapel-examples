@@ -1,0 +1,70 @@
+module;
+
+#include <variant>
+
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_main.h>
+
+#include <entt/entt.hpp>
+
+export module game:game_render;
+
+import :game_game;
+import :game_material;
+
+void renderShape(const MaterialShape& shape) {
+  auto *renderer = game.renderer();
+
+  if (shape.fill_color.a > 0) {
+    SDL_SetRenderDrawColorFloat(renderer, shape.fill_color.r, shape.fill_color.g, shape.fill_color.b, shape.fill_color.a);
+    SDL_RenderFillRect(renderer, &shape.dst_rect);
+  }
+
+  if (shape.draw_color.a > 0) {
+    SDL_SetRenderDrawColorFloat(renderer, shape.draw_color.r, shape.draw_color.g, shape.draw_color.b, shape.draw_color.a);
+    SDL_RenderRect(renderer, &shape.dst_rect);
+  }
+}
+
+void renderTexture(const MaterialTexture& texture) {
+
+}
+
+void renderLayer(const MaterialLayer& layer) {
+  if (layer.hidden) {
+    return;
+  }
+
+  if (auto* texture = std::get_if<MaterialTexture>(&layer.value); texture != nullptr) {
+    renderTexture(*texture);
+    return;
+  }
+
+  renderShape(std::get<MaterialShape>(layer.value));
+}
+
+void renderMaterial(const Material& material) {
+  if (material.hidden) {
+    return;
+  }
+
+  for (const auto& layer : material.layers) {
+    renderLayer(layer);
+  }
+}
+
+export {
+
+void renderCallback() {
+  auto *renderer = game.renderer();
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+  SDL_RenderClear(renderer);
+
+  for (const auto& [_, material] : game.ecs().view<Material>().each()) {
+    renderMaterial(material);
+  }
+
+  SDL_RenderPresent(renderer);
+}
+
+}  // export

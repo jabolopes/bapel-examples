@@ -19,15 +19,11 @@ public:
   SDL_Renderer* renderer() const { return renderer_; }
   void set_renderer(SDL_Renderer* renderer) { renderer_ = renderer; }
 
-  std::function<void()>& update() { return update_; }
-  void set_update(std::function<void()> update) { update_ = std::move(update); }
-
   entt::registry& ecs() { return ecs_; }
 
 private:
   SDL_Window *window_ = nullptr;
   SDL_Renderer *renderer_ = nullptr;
-  std::function<void()> update_;
   entt::registry ecs_;
 };
 
