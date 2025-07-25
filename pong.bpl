@@ -21,15 +21,15 @@ type Motion = struct{delta sdl.FPoint}
 fn init() -> () {
   initPlayerInput ()
 
-  let lpadMaterial: Material = newRect (100, 100, 20, 50)
+  let lpadMaterial: Material = newRect (100, 100, 10, 50)
   let lpad: Entity = ecs.init3 [Lpad, Material, Motion] (ecs.add (), struct{}, lpadMaterial, struct{delta = struct{x = 0, y = 0}})
 
-  let rpadMaterial: Material = newRect (500, 100, 20, 50)
+  let rpadMaterial: Material = newRect (500, 100, 10, 50)
   let rpad: Entity = ecs.init3 [Rpad, Material, Motion] (ecs.add (), struct{}, rpadMaterial, struct{delta = struct{x = 0, y = 0}})
 
   let ballMaterial: Material = newRect (200, 100, 10, 10)
   setAnchor (ballMaterial, struct{x = 0.5, y = 0.5})
-  let ballDir: Dir = struct{dir = struct{x = 1, y = 1}}
+  let ballDir: Dir = struct{dir = struct{x = 1, y = 0}}
   let ball: Entity = ecs.init3 [Ball, Material, Dir] (ecs.add (), struct{}, ballMaterial, ballDir)
 
   ()
@@ -70,7 +70,7 @@ fn getPadMotion['a]() -> sdl.FPoint {
 }
 
 fn updatePads(deltaTime: f32) -> () {
-  let velocity: f32 = 0.8
+  let velocity: f32 = 0.6
 
   let lpad: std.optional (Entity, Lpad, Material) = ecs.joinAny [Lpad, Material] ()
   if !has_value [(Entity, Lpad, Material)] lpad {
@@ -103,7 +103,7 @@ fn updatePads(deltaTime: f32) -> () {
 }
 
 fn updateBall(deltaTime: f32) -> () {
-  let velocity: f32 = 0.1
+  let velocity: f32 = 0.3
 
   let ball: std.optional (Entity, Ball, Material, Dir) = ecs.join3Any [Ball, Material, Dir] ()
   if !has_value [(Entity, Ball, Material, Dir)] ball {
@@ -134,23 +134,23 @@ fn updateBall(deltaTime: f32) -> () {
 
   if posDelta->y < 0 && lineSegmentCrossesHLine (pos, newPos, 0) {
     rect <- set rect {y = 0}
-    newDir <- set newDir {y = 1}
+    newDir <- set newDir {y = core.abs newDir->y}
   } else {
     let d: f32 = windowSizeF->y - rect->h
     if posDelta->y > 0 && lineSegmentCrossesHLine (pos, newPos, d) {
       rect <- set rect {y = d}
-      newDir <- set newDir {y = -1}
+      newDir <- set newDir {y = - core.abs newDir->y}
     }
   }
 
   if posDelta->x < 0 && lineSegmentCrossesVLine (pos, newPos, 0) {
-    rect <- set rect {x = 0}
-    newDir <- set newDir {x = 1}
+    rect <- set rect {x = 150, y = windowSizeF->y / 2}
+    newDir <- struct{x = 1, y = 0.1}
   } else {
     let d: f32 = windowSizeF->x - rect->w
     if posDelta->x > 0 && lineSegmentCrossesVLine (pos, newPos, d) {
-      rect <- set rect {x = d}
-      newDir <- set newDir {x = -1}
+      rect <- set rect {x = windowSizeF->x - 150, y = windowSizeF->y / 2}
+      newDir <- struct{x = -1, y = -0.1}
     }
   }
 
@@ -160,16 +160,14 @@ fn updateBall(deltaTime: f32) -> () {
     let newRelativePos: sdl.FPoint = struct{x = newPos->x - padMotion->x, y = newPos->y - padMotion->y}
 
     let intersection: sdl.FPoint = struct{x = 0, y = 0}
-    let normal: sdl.FPoint = struct{x = 0, y = 0}
+    let bounce: sdl.FPoint = struct{x = 0, y = 0}
     let ok: bool = false
-    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newRelativePos, lpadRect)
+    (intersection, bounce, ok) <- lineSegmentCrossesRect (pos, newRelativePos, lpadRect)
     if ok {
       rect <- set rect {x = intersection->x, y = intersection->y}
-      if normal->x != 0 {
-        newDir <- set newDir {x = core.abs newDir->x * signnum normal->x}
-      }
-      if normal->y != 0 {
-        newDir <- set newDir {y = core.abs newDir->y * signnum normal->y}
+      newDir <- set newDir {
+        x = bounce->x,
+        y = clamp(bounce->y, -0.5, 0.5),
       }
     }
   }
@@ -180,22 +178,20 @@ fn updateBall(deltaTime: f32) -> () {
     let newRelativePos: sdl.FPoint = struct{x = newPos->x - padMotion->x, y = newPos->y - padMotion->y}
 
     let intersection: sdl.FPoint = struct{x = 0, y = 0}
-    let normal: sdl.FPoint = struct{x = 0, y = 0}
+    let bounce: sdl.FPoint = struct{x = 0, y = 0}
     let ok: bool = false
-    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newRelativePos, rpadRect)
+    (intersection, bounce, ok) <- lineSegmentCrossesRect (pos, newRelativePos, rpadRect)
     if ok {
       rect <- set rect {x = intersection->x, y = intersection->y}
-      if normal->x != 0 {
-        newDir <- set newDir {x = core.abs newDir->x * signnum normal->x}
-      }
-      if normal->y != 0 {
-        newDir <- set newDir {y = core.abs newDir->y * signnum normal->y}
+      newDir <- set newDir {
+        x = velocity * bounce->x,
+        y = clamp(bounce->y, -0.5, 0.5),
       }
     }
   }
 
   setDstRect(material, rect)
-  ballDir <- set ballDir {dir = newDir}
+  ballDir <- set ballDir {dir = normalize newDir}
 
   ecs.set2 [Material, Dir] (ballID, material, ballDir)
 }

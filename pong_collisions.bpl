@@ -70,28 +70,22 @@ fn getLineSegmentTop(rect: sdl.FRect) -> (sdl.FPoint, sdl.FPoint) {
 
 fn lineSegmentCrossesRect(a: sdl.FPoint, b: sdl.FPoint, rect: sdl.FRect) -> (sdl.FPoint, sdl.FPoint, bool) {
   let intersection: sdl.FPoint = struct{x = 0, y = 0}
-  let normal: sdl.FPoint = struct{x = 0, y = 0}
+  let bounce: sdl.FPoint = struct{x = 0, y = 0}
   let ok: bool = false
 
   if sdl.PointInRectFloat(a, rect) {
-    printString "already inside rect"
-    return (intersection, normal, false)
+    return (intersection, bounce, false)
   }
   if !sdl.PointInRectFloat(b, rect) {
-    return (intersection, normal, false)
+    return (intersection, bounce, false)
   }
-
-  printString "inside rect"
 
   if lineSegmentCrossesVLine (a, b, rect->x) {
     let left: (sdl.FPoint, sdl.FPoint) = getLineSegmentLeft rect
     (intersection, ok) <- linesCross (a, b, left->0, left->1)
     if ok {
-      let normal: sdl.FPoint = perpendicularFPoint (subFPoints (left->1, left->0))
-      printString "left"
-      printPoint intersection
-      printPoint normal
-      return (intersection, normal, true)
+      let bounce: sdl.FPoint = subFPoints (intersection, centerFRect rect)
+      return (intersection, bounce, true)
     }
   }
 
@@ -99,11 +93,8 @@ fn lineSegmentCrossesRect(a: sdl.FPoint, b: sdl.FPoint, rect: sdl.FRect) -> (sdl
     let bottom: (sdl.FPoint, sdl.FPoint) = getLineSegmentBottom rect
     (intersection, ok) <- linesCross (a, b, bottom->0, bottom->1)
     if ok {
-      let normal: sdl.FPoint = perpendicularFPoint (subFPoints (bottom->1, bottom->0))
-      printString "bottom"
-      printPoint intersection
-      printPoint normal
-      return (intersection, normal, true)
+      let bounce: sdl.FPoint = subFPoints (intersection, centerFRect rect)
+      return (intersection, bounce, true)
     }
   }
 
@@ -111,11 +102,8 @@ fn lineSegmentCrossesRect(a: sdl.FPoint, b: sdl.FPoint, rect: sdl.FRect) -> (sdl
     let right: (sdl.FPoint, sdl.FPoint) = getLineSegmentRight rect
     (intersection, ok) <- linesCross (a, b, right->0, right->1)
     if ok {
-      let normal: sdl.FPoint = perpendicularFPoint (subFPoints (right->1, right->0))
-      printString "right"
-      printPoint intersection
-      printPoint normal
-      return (intersection, normal, true)
+      let bounce: sdl.FPoint = subFPoints (intersection, centerFRect rect)
+      return (intersection, bounce, true)
     }
   }
 
@@ -123,13 +111,10 @@ fn lineSegmentCrossesRect(a: sdl.FPoint, b: sdl.FPoint, rect: sdl.FRect) -> (sdl
     let top: (sdl.FPoint, sdl.FPoint) = getLineSegmentTop rect
     (intersection, ok) <- linesCross (a, b, top->0, top->1)
     if ok {
-      let normal: sdl.FPoint = perpendicularFPoint (subFPoints (top->1, top->0))
-      printString "top"
-      printPoint intersection
-      printPoint normal
-      return (intersection, normal, true)
+      let bounce: sdl.FPoint = subFPoints (intersection, centerFRect rect)
+      return (intersection, bounce, true)
     }
   }
 
-  (intersection, normal, false)
+  (intersection, bounce, false)
 }

@@ -38,7 +38,7 @@ Material newRect(float x, float y, float w, float h) {
       MaterialLayer{
         .value = MaterialShape{
           .dst_rect = SDL_FRect{x, y, w, h},
-          .fill_color = SDL_FColor{1.0, 0.0, 0.0, 1.0},
+          .fill_color = SDL_FColor{0.7, 0.7, 0.7, 1.0},
         }
       }
     }
