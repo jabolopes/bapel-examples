@@ -14,6 +14,7 @@ struct MaterialTexture {
 };
 
 struct MaterialShape {
+  SDL_FPoint anchor = {0, 0};
   SDL_FRect dst_rect = {0, 0, 0, 0};
   SDL_FColor fill_color = {0, 0, 0, 0};
   SDL_FColor draw_color = {0, 0, 0, 0};
@@ -42,6 +43,14 @@ Material newRect(float x, float y, float w, float h) {
       }
     }
   };
+}
+
+// @bpl: export setAnchor: (Material, sdl.FPoint) -> ()
+std::monostate setAnchor(Material& material, const SDL_FPoint& anchor) {
+  auto& layer = material.layers[0];
+  auto* shape = std::get_if<MaterialShape>(&layer.value);
+  shape->anchor = anchor;
+  return std::monostate();
 }
 
 // @bpl: export getX: Material -> f32
@@ -77,10 +86,10 @@ SDL_FRect getDstRect(Material& material) {
 }
 
 // @bpl: export setDstRect: (Material, sdl.FRect) -> ()
-std::monostate setDstRect(Material& material, SDL_FRect rect) {
+std::monostate setDstRect(Material& material, const SDL_FRect& rect) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);
-  shape->dst_rect = std::move(rect);
+  shape->dst_rect = rect;
   return std::monostate();
 }
 

@@ -44,4 +44,23 @@ using FPoint = SDL_FPoint;
 // @bpl: export type sdl.FRect = struct{x f32, y f32, w f32, h f32}
 using FRect = SDL_FRect;
 
+// @bpl: export sdl.GetRectAndLineIntersectionFloat: (sdl.FRect, sdl.FPoint, sdl.FPoint) -> bool
+bool GetRectAndLineIntersectionFloat(const SDL_FRect& rect, SDL_FPoint& a, SDL_FPoint& b) {
+  return SDL_GetRectAndLineIntersectionFloat(&rect, &a.x, &a.y, &b.x, &b.y);
+}
+
+// @bpl: export sdl.PointInRectFloat: (sdl.FPoint, sdl.FRect) -> bool
+bool PointInRectFloat(const SDL_FPoint& point, const SDL_FRect& rect) {
+  return SDL_PointInRectFloat(&point, &rect);
+}
+
 }  // namespace sdl
+
+export {
+
+// @bpl: export signnum: 'a -> f32
+template <typename T> float signnum(T val) {
+  return (T(0) < val) - (val < T(0));
+}
+
+}  // export

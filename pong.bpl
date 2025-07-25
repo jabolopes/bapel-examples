@@ -21,14 +21,15 @@ type Dir = struct{dir sdl.FPoint}
 fn init() -> () {
   initPlayerInput ()
 
-  let lpadMaterial: Material = newRect (100, 100, 10, 30)
+  let lpadMaterial: Material = newRect (100, 100, 20, 50)
   let lpad: Entity = ecs.init2 [Lpad, Material] (ecs.add (), struct{}, lpadMaterial)
 
-  let rpadMaterial: Material = newRect (500, 100, 10, 30)
+  let rpadMaterial: Material = newRect (500, 100, 20, 50)
   let rpad: Entity = ecs.init2 [Rpad, Material] (ecs.add (), struct{}, rpadMaterial)
 
   let ballMaterial: Material = newRect (200, 100, 10, 10)
-  let ballDir: Dir = struct{dir = struct{x = 1, y = 2}}
+  setAnchor (ballMaterial, struct{x = 0.5, y = 0.5})
+  let ballDir: Dir = struct{dir = struct{x = 1, y = 1}}
   let ball: Entity = ecs.init3 [Ball, Material, Dir] (ecs.add (), struct{}, ballMaterial, ballDir)
 
   ()
@@ -47,6 +48,16 @@ fn setPadMaterial(padID: Entity, material: Material) -> () {
 
   setDstRect (material, rect)
   ecs.set (padID, material)
+}
+
+fn getPadRect['a]() -> sdl.FRect {
+  let pad: std.optional (Entity, 'a, Material) = ecs.joinAny ['a, Material] ()
+  if !has_value [(Entity, 'a, Material)] pad {
+    return emptyFRect ()
+  }
+
+  let material: Material = (get_value [(Entity, 'a, Material)] pad)->2
+  getDstRect material
 }
 
 fn updatePads(deltaTime: f32) -> () {
@@ -101,33 +112,77 @@ fn updateBall(deltaTime: f32) -> () {
 
   let rect: sdl.FRect = getDstRect material
   let pos: sdl.FPoint = struct{x = rect->x, y = rect->y}
-  rect <- set rect {
-    x = rect->x + velocity * ballDir->dir->x * deltaTime,
-    y = rect->y + velocity * ballDir->dir->y * deltaTime,
+
+  let posDelta: sdl.FPoint = struct{x = 0, y = 0}
+  posDelta <- set posDelta {
+    x = velocity * ballDir->dir->x * deltaTime,
+    y = velocity * ballDir->dir->y * deltaTime,
   }
 
-  let newPos: sdl.FPoint = struct{x = rect->x, y = rect->y}
+  let newPos: sdl.FPoint = struct{x = rect->x + posDelta->x, y = rect->y + posDelta->y}
+
+  rect <- set rect {
+    x = newPos->x,
+    y = newPos->y,
+  }
+
   let newDir: sdl.FPoint = ballDir->dir
 
-  if lineSegmentCrossesHLine(pos, newPos, 0) {
+  if posDelta->y < 0 && lineSegmentCrossesHLine (pos, newPos, 0) {
     rect <- set rect {y = 0}
-    newDir <- set newDir {y = -newDir->y}
+    newDir <- set newDir {y = 1}
   } else {
     let d: f32 = windowSizeF->y - rect->h
-    if lineSegmentCrossesHLine(pos, newPos, d) {
+    if posDelta->y > 0 && lineSegmentCrossesHLine (pos, newPos, d) {
       rect <- set rect {y = d}
-      newDir <- set newDir {y = -newDir->y}
+      newDir <- set newDir {y = -1}
     }
   }
 
-  if lineSegmentCrossesVLine(pos, newPos, 0) {
+  if posDelta->x < 0 && lineSegmentCrossesVLine (pos, newPos, 0) {
     rect <- set rect {x = 0}
-    newDir <- set newDir {x = -newDir->x}
+    newDir <- set newDir {x = 1}
   } else {
     let d: f32 = windowSizeF->x - rect->w
-    if lineSegmentCrossesVLine(pos, newPos, d) {
+    if posDelta->x > 0 && lineSegmentCrossesVLine (pos, newPos, d) {
       rect <- set rect {x = d}
-      newDir <- set newDir {x = -newDir->x}
+      newDir <- set newDir {x = -1}
+    }
+  }
+
+  if true {
+    let lpadRect: sdl.FRect = getPadRect [Lpad] ()
+
+    let intersection: sdl.FPoint = struct{x = 0, y = 0}
+    let normal: sdl.FPoint = struct{x = 0, y = 0}
+    let ok: bool = false
+    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newPos, lpadRect)
+    if ok {
+      rect <- set rect {x = intersection->x, y = intersection->y}
+      if normal->x != 0 {
+        newDir <- set newDir {x = core.abs newDir->x * signnum normal->x}
+      }
+      if normal->y != 0 {
+        newDir <- set newDir {y = core.abs newDir->y * signnum normal->y}
+      }
+    }
+  }
+
+  if true {
+    let rpadRect: sdl.FRect = getPadRect [Rpad] ()
+
+    let intersection: sdl.FPoint = struct{x = 0, y = 0}
+    let normal: sdl.FPoint = struct{x = 0, y = 0}
+    let ok: bool = false
+    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newPos, rpadRect)
+    if ok {
+      rect <- set rect {x = intersection->x, y = intersection->y}
+      if normal->x != 0 {
+        newDir <- set newDir {x = core.abs newDir->x * signnum normal->x}
+      }
+      if normal->y != 0 {
+        newDir <- set newDir {y = core.abs newDir->y * signnum normal->y}
+      }
     }
   }
 

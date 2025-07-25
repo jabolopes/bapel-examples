@@ -15,14 +15,22 @@ import :game_material;
 void renderShape(const MaterialShape& shape) {
   auto *renderer = game.renderer();
 
+  auto dst_rect = shape.dst_rect;
+  if (shape.anchor.x > 0) {
+    dst_rect.x -= shape.anchor.x * dst_rect.w;
+  }
+  if (shape.anchor.y > 0) {
+    dst_rect.y -= shape.anchor.y * dst_rect.h;
+  }
+
   if (shape.fill_color.a > 0) {
     SDL_SetRenderDrawColorFloat(renderer, shape.fill_color.r, shape.fill_color.g, shape.fill_color.b, shape.fill_color.a);
-    SDL_RenderFillRect(renderer, &shape.dst_rect);
+    SDL_RenderFillRect(renderer, &dst_rect);
   }
 
   if (shape.draw_color.a > 0) {
     SDL_SetRenderDrawColorFloat(renderer, shape.draw_color.r, shape.draw_color.g, shape.draw_color.b, shape.draw_color.a);
-    SDL_RenderRect(renderer, &shape.dst_rect);
+    SDL_RenderRect(renderer, &dst_rect);
   }
 }
 
