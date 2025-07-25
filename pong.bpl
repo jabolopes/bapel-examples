@@ -60,6 +60,15 @@ fn getPadRect['a]() -> sdl.FRect {
   getDstRect material
 }
 
+fn getPadMotion['a]() -> sdl.FPoint {
+  let pad: std.optional (Entity, 'a, Motion) = ecs.joinAny ['a, Motion] ()
+  if !has_value [(Entity, 'a, Motion)] pad {
+    return struct{x = 0, y = 0}
+  }
+
+  (get_value [(Entity, 'a, Motion)] pad)->2->delta
+}
+
 fn updatePads(deltaTime: f32) -> () {
   let velocity: f32 = 0.8
 
@@ -147,11 +156,13 @@ fn updateBall(deltaTime: f32) -> () {
 
   if true {
     let lpadRect: sdl.FRect = getPadRect [Lpad] ()
+    let padMotion: sdl.FPoint = getPadMotion [Lpad] ()
+    let newRelativePos: sdl.FPoint = struct{x = newPos->x - padMotion->x, y = newPos->y - padMotion->y}
 
     let intersection: sdl.FPoint = struct{x = 0, y = 0}
     let normal: sdl.FPoint = struct{x = 0, y = 0}
     let ok: bool = false
-    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newPos, lpadRect)
+    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newRelativePos, lpadRect)
     if ok {
       rect <- set rect {x = intersection->x, y = intersection->y}
       if normal->x != 0 {
@@ -165,11 +176,13 @@ fn updateBall(deltaTime: f32) -> () {
 
   if true {
     let rpadRect: sdl.FRect = getPadRect [Rpad] ()
+    let padMotion: sdl.FPoint = getPadMotion [Rpad] ()
+    let newRelativePos: sdl.FPoint = struct{x = newPos->x - padMotion->x, y = newPos->y - padMotion->y}
 
     let intersection: sdl.FPoint = struct{x = 0, y = 0}
     let normal: sdl.FPoint = struct{x = 0, y = 0}
     let ok: bool = false
-    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newPos, rpadRect)
+    (intersection, normal, ok) <- lineSegmentCrossesRect (pos, newRelativePos, rpadRect)
     if ok {
       rect <- set rect {x = intersection->x, y = intersection->y}
       if normal->x != 0 {
