@@ -74,11 +74,14 @@ fn lineSegmentCrossesRect(a: sdl.FPoint, b: sdl.FPoint, rect: sdl.FRect) -> (sdl
   let ok: bool = false
 
   if sdl.PointInRectFloat(a, rect) {
+    printString "already inside rect"
     return (intersection, normal, false)
   }
   if !sdl.PointInRectFloat(b, rect) {
     return (intersection, normal, false)
   }
+
+  printString "inside rect"
 
   if lineSegmentCrossesVLine (a, b, rect->x) {
     let left: (sdl.FPoint, sdl.FPoint) = getLineSegmentLeft rect

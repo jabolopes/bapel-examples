@@ -15,17 +15,17 @@ type Lpad = struct{}
 type Rpad = struct{}
 type Ball = struct{}
 
-type Pos = struct{pos sdl.FPoint}
 type Dir = struct{dir sdl.FPoint}
+type Motion = struct{delta sdl.FPoint}
 
 fn init() -> () {
   initPlayerInput ()
 
   let lpadMaterial: Material = newRect (100, 100, 20, 50)
-  let lpad: Entity = ecs.init2 [Lpad, Material] (ecs.add (), struct{}, lpadMaterial)
+  let lpad: Entity = ecs.init3 [Lpad, Material, Motion] (ecs.add (), struct{}, lpadMaterial, struct{delta = struct{x = 0, y = 0}})
 
   let rpadMaterial: Material = newRect (500, 100, 20, 50)
-  let rpad: Entity = ecs.init2 [Rpad, Material] (ecs.add (), struct{}, rpadMaterial)
+  let rpad: Entity = ecs.init3 [Rpad, Material, Motion] (ecs.add (), struct{}, rpadMaterial, struct{delta = struct{x = 0, y = 0}})
 
   let ballMaterial: Material = newRect (200, 100, 10, 10)
   setAnchor (ballMaterial, struct{x = 0.5, y = 0.5})
@@ -68,34 +68,29 @@ fn updatePads(deltaTime: f32) -> () {
     return ()
   }
 
-  let rpad: std.optional (Entity, Rpad, Material) = ecs.joinAny [Rpad, Material] ()
-  if !has_value [(Entity, Rpad, Material)] rpad {
+  let rpad: std.optional (Entity, Rpad) = ecs.getAny [Rpad] ()
+  if !has_value [(Entity, Rpad)] rpad {
     return ()
   }
 
   let lpadID: Entity = (get_value [(Entity, Lpad, Material)] lpad)->0
   let lpadMaterial: Material = (get_value [(Entity, Lpad, Material)] lpad)->2
 
-  let rpadID: Entity = (get_value [(Entity, Rpad, Material)] rpad)->0
-  let rpadMaterial: Material = (get_value [(Entity, Rpad, Material)] rpad)->2
+  let rpadID: Entity = (get_value [(Entity, Rpad)] rpad)->0
 
   let input: PlayerInput = getPlayerInput ()
+  let y: f32 = 0
   if input->up {
-    let y: f32 = getY lpadMaterial - velocity * deltaTime
-    setY (lpadMaterial, y)
+    y <- -velocity * deltaTime
   } else {
     if input->down {
-      let y: f32 = getY lpadMaterial + velocity * deltaTime
-      setY (lpadMaterial, y)
+      y <- velocity * deltaTime
     }
   }
 
-  let rect: sdl.FRect = getDstRect rpadMaterial
-  rect <- set rect {y = (getDstRect lpadMaterial)->y}
-  setDstRect(rpadMaterial, rect)
-
-  setPadMaterial (lpadID, lpadMaterial)
-  setPadMaterial (rpadID, rpadMaterial)
+  let motion: Motion = struct{delta = struct{x = 0, y = y}}
+  ecs.set [Motion] (lpadID, motion)
+  ecs.set [Motion] (rpadID, motion)
 }
 
 fn updateBall(deltaTime: f32) -> () {
@@ -192,10 +187,32 @@ fn updateBall(deltaTime: f32) -> () {
   ecs.set2 [Material, Dir] (ballID, material, ballDir)
 }
 
+fn movePad['a]() -> () {
+  let pad: std.optional (Entity, 'a, Material, Motion) = ecs.join3Any ['a, Material, Motion] ()
+  if !has_value [(Entity, 'a, Material, Motion)] pad {
+    return ()
+  }
+
+  let padID: Entity = (get_value [(Entity, 'a, Material, Motion)] pad)->0
+  let material: Material = (get_value [(Entity, 'a, Material, Motion)] pad)->2
+  let motion: Motion = (get_value [(Entity, 'a, Material, Motion)] pad)->3
+
+  let rect: sdl.FRect = getDstRect material
+  rect <- set rect {
+    x = rect->x + motion->delta->x,
+    y = rect->y + motion->delta->y,
+  }
+  setDstRect(material, rect)
+
+  setPadMaterial (padID, material)
+}
+
 fn update () -> () {
   let deltaTime: f32 = 16
   updatePads deltaTime
   updateBall deltaTime
+  movePad [Lpad] ()
+  movePad [Rpad] ()
   ()
 }
 
