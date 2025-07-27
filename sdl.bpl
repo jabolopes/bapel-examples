@@ -9,9 +9,6 @@ impls {
 }
 
 flags {
-  "-ISDL/include"
-  "-Wl,-rpath,SDL/build"
-  "-LSDL/build"
   "-lSDL3"
 }
 

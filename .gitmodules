@@ -1,6 +1,4 @@
-[submodule "SDL"]
-	path = SDL
-	url = ./SDL/
 [submodule "entt"]
 	path = entt
-	url = ./entt/
+	url = https://github.com/skypjack/entt.git
+	branch = v3.16.0

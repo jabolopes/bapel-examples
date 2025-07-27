@@ -52,7 +52,7 @@ fn setPadMaterial(padID: Entity, material: Material) -> () {
 
 fn getPadRect['a]() -> sdl.FRect {
   let pad: std.optional (Entity, 'a, Material) = ecs.joinAny ['a, Material] ()
-  if !has_value [(Entity, 'a, Material)] pad {
+  if !has_value pad {
     return emptyFRect ()
   }
 
@@ -91,10 +91,8 @@ fn updatePads(deltaTime: f32) -> () {
   let y: f32 = 0
   if input->up {
     y <- -velocity * deltaTime
-  } else {
-    if input->down {
-      y <- velocity * deltaTime
-    }
+  } else if input->down {
+    y <- velocity * deltaTime
   }
 
   let motion: Motion = struct{delta = struct{x = 0, y = y}}
@@ -117,13 +115,15 @@ fn updateBall(deltaTime: f32) -> () {
   let rect: sdl.FRect = getDstRect material
   let pos: sdl.FPoint = struct{x = rect->x, y = rect->y}
 
-  let posDelta: sdl.FPoint = struct{x = 0, y = 0}
-  posDelta <- set posDelta {
+  let posDelta: sdl.FPoint = struct{
     x = velocity * ballDir->dir->x * deltaTime,
     y = velocity * ballDir->dir->y * deltaTime,
   }
 
-  let newPos: sdl.FPoint = struct{x = rect->x + posDelta->x, y = rect->y + posDelta->y}
+  let newPos: sdl.FPoint = struct{
+    x = rect->x + posDelta->x,
+    y = rect->y + posDelta->y,
+  }
 
   rect <- set rect {
     x = newPos->x,
@@ -154,10 +154,13 @@ fn updateBall(deltaTime: f32) -> () {
     }
   }
 
-  if true {
+  {
     let lpadRect: sdl.FRect = getPadRect [Lpad] ()
     let padMotion: sdl.FPoint = getPadMotion [Lpad] ()
-    let newRelativePos: sdl.FPoint = struct{x = newPos->x - padMotion->x, y = newPos->y - padMotion->y}
+    let newRelativePos: sdl.FPoint = struct{
+      x = newPos->x - padMotion->x,
+      y = newPos->y - padMotion->y,
+    }
 
     let intersection: sdl.FPoint = struct{x = 0, y = 0}
     let bounce: sdl.FPoint = struct{x = 0, y = 0}
@@ -172,10 +175,13 @@ fn updateBall(deltaTime: f32) -> () {
     }
   }
 
-  if true {
+  {
     let rpadRect: sdl.FRect = getPadRect [Rpad] ()
     let padMotion: sdl.FPoint = getPadMotion [Rpad] ()
-    let newRelativePos: sdl.FPoint = struct{x = newPos->x - padMotion->x, y = newPos->y - padMotion->y}
+    let newRelativePos: sdl.FPoint = struct{
+      x = newPos->x - padMotion->x,
+      y = newPos->y - padMotion->y,
+    }
 
     let intersection: sdl.FPoint = struct{x = 0, y = 0}
     let bounce: sdl.FPoint = struct{x = 0, y = 0}
