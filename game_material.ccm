@@ -45,7 +45,7 @@ Material newRect(float x, float y, float w, float h) {
   };
 }
 
-// @bpl: export setAnchor: (Material, sdl.FPoint) -> ()
+// @bpl: export setAnchor: (Material, sdl::FPoint) -> ()
 std::monostate setAnchor(Material& material, const SDL_FPoint& anchor) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);
@@ -79,13 +79,13 @@ void setY(Material& material, float y) {
   shape->dst_rect.y = y;
 }
 
-// @bpl: export getDstRect: Material -> sdl.FRect
+// @bpl: export getDstRect: Material -> sdl::FRect
 SDL_FRect getDstRect(Material& material) {
   auto& layer = material.layers[0];
   return std::get<MaterialShape>(layer.value).dst_rect;
 }
 
-// @bpl: export setDstRect: (Material, sdl.FRect) -> ()
+// @bpl: export setDstRect: (Material, sdl::FRect) -> ()
 std::monostate setDstRect(Material& material, const SDL_FRect& rect) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);

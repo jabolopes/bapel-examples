@@ -11,12 +11,12 @@ type PlayerInput = struct{
 }
 
 fn initPlayerInput() -> () {
-  ecs.init [PlayerInput] (ecs.add (), struct{up = false, down = false})
+  ecs::init [PlayerInput] (ecs::add (), struct{up = false, down = false})
   ()
 }
 
 fn getPlayerInput () -> PlayerInput {
-  let playerInput: std.optional (Entity, PlayerInput) = ecs.getAny [PlayerInput] ()
+  let playerInput: std::optional (Entity, PlayerInput) = ecs::getAny [PlayerInput] ()
   if !has_value [(Entity, PlayerInput)] playerInput {
     return struct{up = false, down = false}
   }
@@ -24,20 +24,20 @@ fn getPlayerInput () -> PlayerInput {
   (get_value [(Entity, PlayerInput)] playerInput)->1
 }
 
-fn updatePlayerInput(event: sdl.KeyboardEvent) -> () {
+fn updatePlayerInput(event: sdl::KeyboardEvent) -> () {
   if event->repeat {
     return ()
   }
 
   let input: PlayerInput = getPlayerInput ()
 
-  if event->key == sdl.keyUp {
+  if event->key == sdl::keyUp {
     input <- set input {up = event->down}
   } else {
-    if event->key == sdl.keyDown {
+    if event->key == sdl::keyDown {
       input <- set input {down = event->down}
     }
   }
 
-  ecs.setAny [PlayerInput] input
+  ecs::setAny [PlayerInput] input
 }

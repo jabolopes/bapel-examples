@@ -8,13 +8,13 @@ export module pong:pong_options;
 
 import sdl;
 
-// @bpl: export windowSize: sdl.Point
+// @bpl: export windowSize: sdl::Point
 const sdl::Point windowSize = {600, 400};
 
-// @bpl: export windowSizeF: sdl.FPoint
+// @bpl: export windowSizeF: sdl::FPoint
 const sdl::FPoint windowSizeF = {600, 400};
 
-// @bpl: export printRect: sdl.FRect -> ()
+// @bpl: export printRect: sdl::FRect -> ()
 std::monostate printRect(const sdl::FRect& rect) {
   std::cout << "{x = " << rect.x
             << ", y = " << rect.y
@@ -24,7 +24,7 @@ std::monostate printRect(const sdl::FRect& rect) {
   return std::monostate();
 }
 
-// @bpl: export printPoint: sdl.FPoint -> ()
+// @bpl: export printPoint: sdl::FPoint -> ()
 std::monostate printPoint(const sdl::FPoint& point) {
   std::cout << "{x = " << point.x
             << ", y = " << point.y
@@ -32,7 +32,7 @@ std::monostate printPoint(const sdl::FPoint& point) {
   return std::monostate();
 }
 
-// @bpl: export printString: std.string -> ()
+// @bpl: export printString: std::string -> ()
 std::monostate printString(const std::string& str) {
   std::cout << str << std::endl;
   return std::monostate();

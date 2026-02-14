@@ -10,13 +10,13 @@ type PrefabID = struct{
 }
 
 type Tile = struct{
-  code std.string,
+  code std::string,
 }
 
 type Info = struct{
-  id std.string,
-  cat std.string,
-  sub std.string,
+  id std::string,
+  cat std::string,
+  sub std::string,
 }
 
 fn emptyInfo() -> Info {
@@ -24,17 +24,17 @@ fn emptyInfo() -> Info {
 }
 
 type CardImporter = struct{
-  avatarTexName std.string,
-  color std.string,
-  text std.string,
+  avatarTexName std::string,
+  color std::string,
+  text std::string,
 }
 
 type CharacterDirImporter = struct{
-  dir std.string,
+  dir std::string,
 }
 
 type CharacterDir = struct{
-	dir sdl.Point,
+	dir sdl::Point,
 }
 
 type Chest = struct{
@@ -42,7 +42,7 @@ type Chest = struct{
 }
 
 type InventoryImporter = struct{
-	items std.string,
+	items std::string,
 }
 
 type Potion = struct{
@@ -52,16 +52,16 @@ type Potion = struct{
 type Sector = struct{
 	clip i64,
 	gen i64,
-	base std.string,
-	layers std.string,
-	bgTexName std.string,
-	floorTexName std.string,
+	base std::string,
+	layers std::string,
+	bgTexName std::string,
+	floorTexName std::string,
 }
 
 // All entities managed by a `liveSector` automatically have a
 // `SectorPos` will stores their position in the sector.
 type SectorPos = struct{
-	pos sdl.Point,
+	pos sdl::Point,
 }
 
 type Specs = struct{

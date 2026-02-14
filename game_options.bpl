@@ -5,7 +5,7 @@ imports {
 }
 
 export type GameOptions = struct{
-  windowSize sdl.Point,
-  keyboardHandler sdl.KeyboardEvent -> (),
+  windowSize sdl::Point,
+  keyboardHandler sdl::KeyboardEvent -> (),
   updateHandler () -> (),
 }
