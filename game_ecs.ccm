@@ -12,22 +12,22 @@ export module game:game_ecs;
 
 import :game_game;
 
-// @bpl: export type Entity
+// @bpl: pub type Entity
 export using Entity = entt::entity;
 
 export namespace ecs {
 
-// @bpl: export ecs::add: () -> Entity
+// @bpl: pub ecs::add: () -> Entity
 Entity add() {
   return game.ecs().create();
 }
 
-// @bpl: export ecs::is_valid: Entity -> bool
+// @bpl: pub ecs::is_valid: Entity -> bool
 bool is_valid(Entity entity) {
   return entity != static_cast<Entity>(-1);
 }
 
-// @bpl: export ecs::init: forall ['a] (Entity, 'a) -> Entity
+// @bpl: pub ecs::init: forall ['a] (Entity, 'a) -> Entity
 template <typename A>
 Entity init(Entity entity, A a) {
   game.ecs().erase_if(entity, [](auto&, auto&) { return true; });
@@ -35,7 +35,7 @@ Entity init(Entity entity, A a) {
   return entity;
 }
 
-// @bpl: export ecs::init2: forall ['a, 'b] (Entity, 'a, 'b) -> Entity
+// @bpl: pub ecs::init2: forall ['a, 'b] (Entity, 'a, 'b) -> Entity
 template <typename A, typename B>
 Entity init2(Entity entity, A a, B b) {
   game.ecs().erase_if(entity, [](auto&, auto&) { return true; });
@@ -44,7 +44,7 @@ Entity init2(Entity entity, A a, B b) {
   return entity;
 }
 
-// @bpl: export ecs::init3: forall ['a, 'b, 'c] (Entity, 'a, 'b, 'c) -> Entity
+// @bpl: pub ecs::init3: forall ['a, 'b, 'c] (Entity, 'a, 'b, 'c) -> Entity
 template <typename A, typename B, typename C>
 Entity init3(Entity entity, A a, B b, C c) {
   game.ecs().erase_if(entity, [](auto&, auto&) { return true; });
@@ -54,7 +54,7 @@ Entity init3(Entity entity, A a, B b, C c) {
   return entity;
 }
 
-// @bpl: export ecs::getAny: forall ['a] () -> std::optional (Entity, 'a)
+// @bpl: pub ecs::getAny: forall ['a] () -> std::optional (Entity, 'a)
 template <typename A>
 std::optional<std::pair<Entity, A>> getAny() {
   auto view = game.ecs().template view<A>();
@@ -64,7 +64,7 @@ std::optional<std::pair<Entity, A>> getAny() {
   return std::nullopt;
 }
 
-// @bpl: export ecs::joinAny: forall ['a, 'b] () -> std::optional (Entity, 'a, 'b)
+// @bpl: pub ecs::joinAny: forall ['a, 'b] () -> std::optional (Entity, 'a, 'b)
 template <typename A, typename B>
 std::optional<std::tuple<Entity, A, B>> joinAny() {
   auto view = game.ecs().template view<A, B>();
@@ -74,7 +74,7 @@ std::optional<std::tuple<Entity, A, B>> joinAny() {
   return std::nullopt;
 }
 
-// @bpl: export ecs::join3Any: forall ['a, 'b, 'c] () -> std::optional (Entity, 'a, 'b, 'c)
+// @bpl: pub ecs::join3Any: forall ['a, 'b, 'c] () -> std::optional (Entity, 'a, 'b, 'c)
 template <typename A, typename B, typename C>
 std::optional<std::tuple<Entity, A, B, C>> join3Any() {
   auto view = game.ecs().template view<A, B, C>();
@@ -84,21 +84,21 @@ std::optional<std::tuple<Entity, A, B, C>> join3Any() {
   return std::nullopt;
 }
 
-// @bpl: export ecs::get: forall ['a] Entity -> std::optional 'a
+// @bpl: pub ecs::get: forall ['a] Entity -> std::optional 'a
 template <typename A>
 std::optional<A> get(Entity entity) {
   auto* a = game.ecs().try_get<A>(entity);
   return (a == nullptr) ? std::nullopt : std::make_optional<A>(*a);
 }
 
-// @bpl: export ecs::set: forall ['a] (Entity, 'a) -> ()
+// @bpl: pub ecs::set: forall ['a] (Entity, 'a) -> ()
 template <typename A>
 std::monostate set(Entity entity, A a) {
   game.ecs().emplace_or_replace<A>(entity, std::move(a));
   return std::monostate();
 }
 
-// @bpl: export ecs::set2: forall ['a, 'b] (Entity, 'a, 'b) -> ()
+// @bpl: pub ecs::set2: forall ['a, 'b] (Entity, 'a, 'b) -> ()
 template <typename A, typename B>
 std::monostate set2(Entity entity, A a, B b) {
   game.ecs().emplace_or_replace<A>(entity, std::move(a));
@@ -106,7 +106,7 @@ std::monostate set2(Entity entity, A a, B b) {
   return std::monostate();
 }
 
-// @bpl: export ecs::setAny: forall ['a] 'a -> ()
+// @bpl: pub ecs::setAny: forall ['a] 'a -> ()
 template <typename A>
 std::monostate setAny(A a) {
   auto entity_a = getAny<A>();

@@ -231,7 +231,7 @@ fn update () -> () {
   ()
 }
 
-export fn pong::start() -> i64 {
+pub fn pong::start() -> i64 {
   init ()
 
   let options: GameOptions = struct{windowSize = windowSize, keyboardHandler = updatePlayerInput, updateHandler = update}

@@ -25,13 +25,13 @@ struct MaterialLayer {
   std::variant<MaterialTexture, MaterialShape> value = MaterialShape{};
 };
 
-// @bpl: export type Material
+// @bpl: pub type Material
 struct Material {
   bool hidden = false;
   std::vector<MaterialLayer> layers;
 };
 
-// @bpl: export newRect: (f32, f32, f32, f32) -> Material
+// @bpl: pub newRect: (f32, f32, f32, f32) -> Material
 Material newRect(float x, float y, float w, float h) {
   return Material{
     .layers = {
@@ -45,7 +45,7 @@ Material newRect(float x, float y, float w, float h) {
   };
 }
 
-// @bpl: export setAnchor: (Material, sdl::FPoint) -> ()
+// @bpl: pub setAnchor: (Material, sdl::FPoint) -> ()
 std::monostate setAnchor(Material& material, const SDL_FPoint& anchor) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);
@@ -53,39 +53,39 @@ std::monostate setAnchor(Material& material, const SDL_FPoint& anchor) {
   return std::monostate();
 }
 
-// @bpl: export getX: Material -> f32
+// @bpl: pub getX: Material -> f32
 float getX(const Material& material) {
   auto& layer = material.layers[0];
   return std::get<MaterialShape>(layer.value).dst_rect.x;
 }
 
-// @bpl: export getY: Material -> f32
+// @bpl: pub getY: Material -> f32
 float getY(const Material& material) {
   auto& layer = material.layers[0];
   return std::get<MaterialShape>(layer.value).dst_rect.y;
 }
 
-// @bpl: export setX: (Material, f32) -> ()
+// @bpl: pub setX: (Material, f32) -> ()
 void setX(Material& material, float x) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);
   shape->dst_rect.x = x;
 }
 
-// @bpl: export setY: (Material, f32) -> ()
+// @bpl: pub setY: (Material, f32) -> ()
 void setY(Material& material, float y) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);
   shape->dst_rect.y = y;
 }
 
-// @bpl: export getDstRect: Material -> sdl::FRect
+// @bpl: pub getDstRect: Material -> sdl::FRect
 SDL_FRect getDstRect(Material& material) {
   auto& layer = material.layers[0];
   return std::get<MaterialShape>(layer.value).dst_rect;
 }
 
-// @bpl: export setDstRect: (Material, sdl::FRect) -> ()
+// @bpl: pub setDstRect: (Material, sdl::FRect) -> ()
 std::monostate setDstRect(Material& material, const SDL_FRect& rect) {
   auto& layer = material.layers[0];
   auto* shape = std::get_if<MaterialShape>(&layer.value);

@@ -120,7 +120,7 @@ void Toolkit::Run() {
 
 export {
 
-// @bpl: export gameInit: GameOptions -> i64
+// @bpl: pub gameInit: GameOptions -> i64
 int gameInit(const GameOptions& options) {
   if (!SDL_Init(SDL_INIT_VIDEO)) {
     SDL_Log("Failed to initialize SDL: %s\n", SDL_GetError());
