@@ -21,21 +21,21 @@ fn getPlayerInput () -> PlayerInput {
     return struct{up = false, down = false}
   }
 
-  (get_value [(Entity, PlayerInput)] playerInput)->1
+  (get_value [(Entity, PlayerInput)] playerInput).1
 }
 
 fn updatePlayerInput(event: sdl::KeyboardEvent) -> () {
-  if event->repeat {
+  if event.repeat {
     return ()
   }
 
   let input: PlayerInput = getPlayerInput ()
 
-  if event->key == sdl::keyUp {
-    input <- set input {up = event->down}
+  if event.key == sdl::keyUp {
+    input <- set input {up = event.down}
   } else {
-    if event->key == sdl::keyDown {
-      input <- set input {down = event->down}
+    if event.key == sdl::keyDown {
+      input <- set input {down = event.down}
     }
   }
 

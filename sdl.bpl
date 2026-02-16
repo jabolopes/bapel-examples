@@ -27,11 +27,11 @@ export fn emptyFRect() -> sdl::FRect {
 }
 
 export fn centerFRect(rect: sdl::FRect) -> sdl::FPoint {
-  struct{x = rect->x + rect->w/2, y = rect->y + rect->h/2}
+  struct{x = rect.x + rect.w/2, y = rect.y + rect.h/2}
 }
 
 export fn magnitude(v: sdl::FPoint) -> f32 {
-  core::squareRoot (v->x * v->x + v->y * v->y)
+  core::squareRoot (v.x * v.x + v.y * v.y)
 }
 
 export fn normalize(v: sdl::FPoint) -> sdl::FPoint {
@@ -39,13 +39,13 @@ export fn normalize(v: sdl::FPoint) -> sdl::FPoint {
   if m == 0 {
     return struct{x = 0, y = 0}
   }
-  struct{x = v->x / m, y = v->y / m}
+  struct{x = v.x / m, y = v.y / m}
 }
 
 export fn subFPoints(v1: sdl::FPoint, v2: sdl::FPoint) -> sdl::FPoint {
-  struct{x = v1->x - v2->x, y = v1->y - v2->y}
+  struct{x = v1.x - v2.x, y = v1.y - v2.y}
 }
 
 export fn dotProduct(v1: sdl::FPoint, v2: sdl::FPoint) -> f32 {
-  (v1->x * v2->x) + (v1->y * v2->y)
+  (v1.x * v2.x) + (v1.y * v2.y)
 }

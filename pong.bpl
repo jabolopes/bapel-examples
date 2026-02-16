@@ -37,11 +37,11 @@ fn init() -> () {
 
 fn setPadMaterial(padID: Entity, material: Material) -> () {
   let rect: sdl::FRect = getDstRect material
-  if rect->y < 0 {
+  if rect.y < 0 {
     rect <- set rect {y = 0}
   } else {
-    let d: f32 = windowSizeF->y - rect->h
-    if rect->y > d {
+    let d: f32 = windowSizeF.y - rect.h
+    if rect.y > d {
       rect <- set rect {y = d}
     }
   }
@@ -56,7 +56,7 @@ fn getPadRect['a]() -> sdl::FRect {
     return emptyFRect ()
   }
 
-  let material: Material = (get_value [(Entity, 'a, Material)] pad)->2
+  let material: Material = (get_value [(Entity, 'a, Material)] pad).2
   getDstRect material
 }
 
@@ -66,7 +66,7 @@ fn getPadMotion['a]() -> sdl::FPoint {
     return struct{x = 0, y = 0}
   }
 
-  (get_value [(Entity, 'a, Motion)] pad)->2->delta
+  (get_value [(Entity, 'a, Motion)] pad).2.delta
 }
 
 fn updatePads(deltaTime: f32) -> () {
@@ -82,16 +82,16 @@ fn updatePads(deltaTime: f32) -> () {
     return ()
   }
 
-  let lpadID: Entity = (get_value [(Entity, Lpad, Material)] lpad)->0
-  let lpadMaterial: Material = (get_value [(Entity, Lpad, Material)] lpad)->2
+  let lpadID: Entity = (get_value [(Entity, Lpad, Material)] lpad).0
+  let lpadMaterial: Material = (get_value [(Entity, Lpad, Material)] lpad).2
 
-  let rpadID: Entity = (get_value [(Entity, Rpad)] rpad)->0
+  let rpadID: Entity = (get_value [(Entity, Rpad)] rpad).0
 
   let input: PlayerInput = getPlayerInput ()
   let y: f32 = 0
-  if input->up {
+  if input.up {
     y <- -velocity * deltaTime
-  } else if input->down {
+  } else if input.down {
     y <- velocity * deltaTime
   }
 
@@ -108,48 +108,48 @@ fn updateBall(deltaTime: f32) -> () {
     return ()
   }
 
-  let ballID: Entity = (get_value [(Entity, Ball, Material, Dir)] ball)->0
-  let material: Material = (get_value [(Entity, Ball, Material, Dir)] ball)->2
-  let ballDir: Dir = (get_value [(Entity, Ball, Material, Dir)] ball)->3
+  let ballID: Entity = (get_value [(Entity, Ball, Material, Dir)] ball).0
+  let material: Material = (get_value [(Entity, Ball, Material, Dir)] ball).2
+  let ballDir: Dir = (get_value [(Entity, Ball, Material, Dir)] ball).3
 
   let rect: sdl::FRect = getDstRect material
-  let pos: sdl::FPoint = struct{x = rect->x, y = rect->y}
+  let pos: sdl::FPoint = struct{x = rect.x, y = rect.y}
 
   let posDelta: sdl::FPoint = struct{
-    x = velocity * ballDir->dir->x * deltaTime,
-    y = velocity * ballDir->dir->y * deltaTime,
+    x = velocity * ballDir.dir.x * deltaTime,
+    y = velocity * ballDir.dir.y * deltaTime,
   }
 
   let newPos: sdl::FPoint = struct{
-    x = rect->x + posDelta->x,
-    y = rect->y + posDelta->y,
+    x = rect.x + posDelta.x,
+    y = rect.y + posDelta.y,
   }
 
   rect <- set rect {
-    x = newPos->x,
-    y = newPos->y,
+    x = newPos.x,
+    y = newPos.y,
   }
 
-  let newDir: sdl::FPoint = ballDir->dir
+  let newDir: sdl::FPoint = ballDir.dir
 
-  if posDelta->y < 0 && lineSegmentCrossesHLine (pos, newPos, 0) {
+  if posDelta.y < 0 && lineSegmentCrossesHLine (pos, newPos, 0) {
     rect <- set rect {y = 0}
-    newDir <- set newDir {y = core::abs newDir->y}
+    newDir <- set newDir {y = core::abs newDir.y}
   } else {
-    let d: f32 = windowSizeF->y - rect->h
-    if posDelta->y > 0 && lineSegmentCrossesHLine (pos, newPos, d) {
+    let d: f32 = windowSizeF.y - rect.h
+    if posDelta.y > 0 && lineSegmentCrossesHLine (pos, newPos, d) {
       rect <- set rect {y = d}
-      newDir <- set newDir {y = - core::abs newDir->y}
+      newDir <- set newDir {y = - core::abs newDir.y}
     }
   }
 
-  if posDelta->x < 0 && lineSegmentCrossesVLine (pos, newPos, 0) {
-    rect <- set rect {x = 150, y = windowSizeF->y / 2}
+  if posDelta.x < 0 && lineSegmentCrossesVLine (pos, newPos, 0) {
+    rect <- set rect {x = 150, y = windowSizeF.y / 2}
     newDir <- struct{x = 1, y = 0.1}
   } else {
-    let d: f32 = windowSizeF->x - rect->w
-    if posDelta->x > 0 && lineSegmentCrossesVLine (pos, newPos, d) {
-      rect <- set rect {x = windowSizeF->x - 150, y = windowSizeF->y / 2}
+    let d: f32 = windowSizeF.x - rect.w
+    if posDelta.x > 0 && lineSegmentCrossesVLine (pos, newPos, d) {
+      rect <- set rect {x = windowSizeF.x - 150, y = windowSizeF.y / 2}
       newDir <- struct{x = -1, y = -0.1}
     }
   }
@@ -158,8 +158,8 @@ fn updateBall(deltaTime: f32) -> () {
     let lpadRect: sdl::FRect = getPadRect [Lpad] ()
     let padMotion: sdl::FPoint = getPadMotion [Lpad] ()
     let newRelativePos: sdl::FPoint = struct{
-      x = newPos->x - padMotion->x,
-      y = newPos->y - padMotion->y,
+      x = newPos.x - padMotion.x,
+      y = newPos.y - padMotion.y,
     }
 
     let intersection: sdl::FPoint = struct{x = 0, y = 0}
@@ -167,10 +167,10 @@ fn updateBall(deltaTime: f32) -> () {
     let ok: bool = false
     (intersection, bounce, ok) <- lineSegmentCrossesRect (pos, newRelativePos, lpadRect)
     if ok {
-      rect <- set rect {x = intersection->x, y = intersection->y}
+      rect <- set rect {x = intersection.x, y = intersection.y}
       newDir <- set newDir {
-        x = bounce->x,
-        y = clamp(bounce->y, -0.5, 0.5),
+        x = bounce.x,
+        y = clamp(bounce.y, -0.5, 0.5),
       }
     }
   }
@@ -179,8 +179,8 @@ fn updateBall(deltaTime: f32) -> () {
     let rpadRect: sdl::FRect = getPadRect [Rpad] ()
     let padMotion: sdl::FPoint = getPadMotion [Rpad] ()
     let newRelativePos: sdl::FPoint = struct{
-      x = newPos->x - padMotion->x,
-      y = newPos->y - padMotion->y,
+      x = newPos.x - padMotion.x,
+      y = newPos.y - padMotion.y,
     }
 
     let intersection: sdl::FPoint = struct{x = 0, y = 0}
@@ -188,10 +188,10 @@ fn updateBall(deltaTime: f32) -> () {
     let ok: bool = false
     (intersection, bounce, ok) <- lineSegmentCrossesRect (pos, newRelativePos, rpadRect)
     if ok {
-      rect <- set rect {x = intersection->x, y = intersection->y}
+      rect <- set rect {x = intersection.x, y = intersection.y}
       newDir <- set newDir {
-        x = velocity * bounce->x,
-        y = clamp(bounce->y, -0.5, 0.5),
+        x = velocity * bounce.x,
+        y = clamp(bounce.y, -0.5, 0.5),
       }
     }
   }
@@ -208,14 +208,14 @@ fn movePad['a]() -> () {
     return ()
   }
 
-  let padID: Entity = (get_value [(Entity, 'a, Material, Motion)] pad)->0
-  let material: Material = (get_value [(Entity, 'a, Material, Motion)] pad)->2
-  let motion: Motion = (get_value [(Entity, 'a, Material, Motion)] pad)->3
+  let padID: Entity = (get_value [(Entity, 'a, Material, Motion)] pad).0
+  let material: Material = (get_value [(Entity, 'a, Material, Motion)] pad).2
+  let motion: Motion = (get_value [(Entity, 'a, Material, Motion)] pad).3
 
   let rect: sdl::FRect = getDstRect material
   rect <- set rect {
-    x = rect->x + motion->delta->x,
-    y = rect->y + motion->delta->y,
+    x = rect.x + motion.delta.x,
+    y = rect.y + motion.delta.y,
   }
   setDstRect(material, rect)
 

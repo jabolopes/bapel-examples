@@ -16,11 +16,11 @@ type playerInput = struct{
 }
 
 fn input::anyDirectionalKey(i: playerInput) -> bool {
-  i->keyUp || i->keyDown || i->keyLeft || i->keyRight
+  i.keyUp || i.keyDown || i.keyLeft || i.keyRight
 }
 
 fn input::anyActionKey(i: playerInput) -> bool {
-  i->keyAttack || i->keyDo || i->keySpecial || i->keyUse
+  i.keyAttack || i.keyDo || i.keySpecial || i.keyUse
 }
 
 fn input::anyKey(i: playerInput) -> bool {
@@ -28,16 +28,16 @@ fn input::anyKey(i: playerInput) -> bool {
 }
 
 fn input::direction(i: playerInput) -> sdl::Point {
-  if i->keyUp {
+  if i.keyUp {
     return struct{x = 0, y = -1}
   }
-  if i->keyDown {
+  if i.keyDown {
     return struct{x = 0, y = 1}
   }
-  if i->keyLeft {
+  if i.keyLeft {
     return struct{x = -1, y = 00}
   }
-  if i->keyRight {
+  if i.keyRight {
     return struct{x = 0, y = 0}
   }
   struct{x = -1, y = 0}
