@@ -5,6 +5,6 @@ imports {
 }
 
 fn main() -> i32 {
-  pong::start()
+  pong::start();
   0
 }

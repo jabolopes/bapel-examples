@@ -35,7 +35,7 @@ pub fn magnitude(v: sdl::FPoint) -> f32 {
 }
 
 pub fn normalize(v: sdl::FPoint) -> sdl::FPoint {
-  let m: f32 = magnitude v
+  let m: f32 = magnitude v;
   if m == 0 {
     return struct{x = 0, y = 0}
   }
