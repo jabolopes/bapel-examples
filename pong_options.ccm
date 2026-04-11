@@ -6,6 +6,7 @@ module;
 
 export module pong:pong_options;
 
+import bapel.stl;
 import sdl;
 
 // @bpl: pub windowSize: sdl::Point
@@ -32,8 +33,8 @@ std::monostate printPoint(const sdl::FPoint& point) {
   return std::monostate();
 }
 
-// @bpl: pub printString: std::string -> ()
-std::monostate printString(const std::string& str) {
+// @bpl: pub printString: String -> ()
+std::monostate printString(const String& str) {
   std::cout << str << std::endl;
   return std::monostate();
 }

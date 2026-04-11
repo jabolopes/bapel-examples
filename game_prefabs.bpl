@@ -2,6 +2,7 @@ implements game
 
 imports {
   bapel.core
+	bapel.stl
   sdl
 }
 
@@ -10,13 +11,13 @@ type PrefabID = struct{
 }
 
 type Tile = struct{
-  code std::string,
+  code String,
 }
 
 type Info = struct{
-  id std::string,
-  cat std::string,
-  sub std::string,
+  id String,
+  cat String,
+  sub String,
 }
 
 fn emptyInfo() -> Info {
@@ -24,13 +25,13 @@ fn emptyInfo() -> Info {
 }
 
 type CardImporter = struct{
-  avatarTexName std::string,
-  color std::string,
-  text std::string,
+  avatarTexName String,
+  color String,
+  text String,
 }
 
 type CharacterDirImporter = struct{
-  dir std::string,
+  dir String,
 }
 
 type CharacterDir = struct{
@@ -42,7 +43,7 @@ type Chest = struct{
 }
 
 type InventoryImporter = struct{
-	items std::string,
+	items String,
 }
 
 type Potion = struct{
@@ -52,10 +53,10 @@ type Potion = struct{
 type Sector = struct{
 	clip i64,
 	gen i64,
-	base std::string,
-	layers std::string,
-	bgTexName std::string,
-	floorTexName std::string,
+	base String,
+	layers String,
+	bgTexName String,
+	floorTexName String,
 }
 
 // All entities managed by a `liveSector` automatically have a
